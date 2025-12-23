@@ -78,8 +78,8 @@ Para ejecutar la aplicación localmente, necesitas servir los archivos estático
    - **Vercel**: El proyecto detectará automáticamente la carpeta `api/` como funciones serverless. Asegúrate de configurar la variable de entorno `N8N_WEBHOOK_URL` en el panel de Vercel.
 
 ## Flujo de Datos
-1. El usuario ingresa los datos en la interfaz web.
+1. El nutricionista ingresa los datos en la interfaz web.
 2. La aplicación calcula los requerimientos en tiempo real.
 3. Al hacer clic en "Generar Plan Nutricional", los datos se envían a `/api/enviar-n8n`.
 4. La función serverless reenvía los datos de forma segura a la URL configurada en `N8N_WEBHOOK_URL`.
-5. n8n procesa la información para generar y enviar el plan al cliente (según la configuración de tu flujo).
+5. n8n procesa la información para generar y enviar el plan al nutricionista (según la configuración de tu flujo), ya que debe pasar por su revisión para su posterior envio al paciente.
