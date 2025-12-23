@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Nutricional</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🍎 Calculadora de Requerimientos</h1>
+      </header>
+
+      <form id="nutritionForm">
+        <div class="card">
+          <h2>1. Datos del Paciente</h2>
+          <div class="grid-2">
+            <div class="input-group">
+              <label>Nombre Completo</label>
+              <input type="text" id="nombre" />
+            </div>
+            <div class="input-group">
+              <label>Edad (años)</label>
+              <input type="number" id="edad" />
+            </div>
+            <div class="input-group">
+              <label>Peso (kg)</label>
+              <input type="number" id="peso" step="0.1" />
+            </div>
+            <div class="input-group">
+              <label>Estatura (cm)</label>
+              <input type="number" id="estatura" />
+            </div>
+            <div class="input-group full-width">
+              <label>Género</label>
+              <div class="radio-group">
+                <label
+                  ><input type="radio" name="genero" value="hombre" checked />
+                  Hombre</label
+                >
+                <label
+                  ><input type="radio" name="genero" value="mujer" />
+                  Mujer</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>2. Gasto Energético</h2>
+          <div class="grid-2">
+            <div class="input-group">
+              <label>Fórmula Predictiva</label>
+              <select id="formula">
+                <option value="mifflin">Mifflin-St Jeor</option>
+                <option value="harris">Harris-Benedict (Revisada)</option>
+                <option value="fao">FAO/OMS</option>
+                <option value="valencia">
+                  Valencia (Población Mexicana/Latina)
+                </option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Factor de Actividad</label>
+              <select id="actividad">
+                <option value="1.2">Sedentario (1.2)</option>
+                <option value="1.375">Ligero (1.375)</option>
+                <option value="1.55">Moderado (1.55)</option>
+                <option value="1.725">Activo (1.725)</option>
+                <option value="1.9">Muy Activo (1.9)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="results-box">
+            <p>Tasa Metabólica Basal (TMB): <span id="res-tmb">0</span> kcal</p>
+            <p>
+              Gasto Energético Total (GET): <span id="res-get">0</span> kcal
+            </p>
+          </div>
+        </div>
+
+        <div class="card highlight-card">
+          <h2>3. Objetivo Calórico</h2>
+          <div class="grid-2">
+            <div class="input-group">
+              <label>Ajuste Automático (%)</label>
+              <select id="ajuste-porcentaje">
+                <option value="-20">Déficit Agresivo (-20%)</option>
+                <option value="-10">Déficit Moderado (-10%)</option>
+                <option value="0" selected>Mantenimiento (0%)</option>
+                <option value="10">Superávit Ligero (+10%)</option>
+                <option value="20">Volumen (+20%)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label style="color: #d9534f; font-weight: bold"
+                >Calorías a Utilizar (Opcional)
+              </label>
+              <input
+                type="number"
+                id="calorias-manuales"
+                placeholder="Ej. 2000 (Sobrescribe auto)"
+              />
+            </div>
+          </div>
+          <div class="final-cal-display">
+            CALORÍAS FINALES: <span id="res-final-cals">0</span> kcal
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>4. Distribución de Macros</h2>
+          <p class="subtitle">Ajusta los porcentajes. Deben sumar 100%.</p>
+
+          <div class="macro-grid">
+            <div class="macro-col">
+              <label>Proteína %</label>
+              <input
+                type="number"
+                class="macro-input"
+                id="perc-prot"
+                value="25"
+              />
+              <div class="macro-result">
+                <span id="g-prot">0</span> g
+                <small id="gkg-prot">0 g/kg</small>
+              </div>
+            </div>
+            <div class="macro-col">
+              <label>Grasas %</label>
+              <input
+                type="number"
+                class="macro-input"
+                id="perc-fat"
+                value="25"
+              />
+              <div class="macro-result">
+                <span id="g-fat">0</span> g
+                <small id="gkg-fat">0 g/kg</small>
+              </div>
+            </div>
+            <div class="macro-col">
+              <label>Carbos %</label>
+              <input
+                type="number"
+                class="macro-input"
+                id="perc-carb"
+                value="50"
+              />
+              <div class="macro-result">
+                <span id="g-carb">0</span> g
+                <small id="gkg-carb">0 g/kg</small>
+              </div>
+            </div>
+          </div>
+          <div id="suma-macros-alert" class="alert hidden">
+            ⚠️ La suma no es 100%
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>5. Preferencias para el Menú</h2>
+          <p>
+            Escribe instrucciones específicas basadas en la lista de alimentos.
+          </p>
+          <div class="input-group">
+            <label>Número de Comidas Diarias</label>
+            <select id="num-comidas">
+              <option value="3">3 Comidas (Desayuno, Almuerzo, Cena)</option>
+              <option value="4">4 Comidas (Incluye 1 snack)</option>
+              <option value="5" selected>5 Comidas (Incluye 2 snacks)</option>
+              <!--<option value="6">6 Comidas (Atletas / Alto volumen)</option>-->
+            </select>
+          </div>
+          <hr />
+          <label for="observaciones"
+            >Observaciones / Restricciones (Opcional):</label
+          >
+          <textarea
+            id="observaciones"
+            rows="4"
+            placeholder="Ej: El cliente prefiere pollo sobre pescado. Es intolerante a la lactosa. Usar camote en lugar de papa en post-entreno."
+          ></textarea>
+        </div>
+
+        <button type="button" id="btn-generar" class="btn-primary">
+          Generar Plan Nutricional
+        </button>
+      </form>
+    </div>
+
+    <script type="module" src="/src/js/main.js"></script>
+  </body>
+</html>
