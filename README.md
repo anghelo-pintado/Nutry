@@ -5,10 +5,12 @@ Una aplicación web diseñada para calcular requerimientos nutricionales, gasto 
 ## Características Principales
 
 ### 1. Gestión de Datos del Paciente
+
 - Entrada de datos básicos: Nombre, Edad, Peso, Estatura y Género.
 - Validación de campos requeridos para cálculos precisos.
 
 ### 2. Cálculo de Energía y Metabolismo
+
 - **Tasa Metabólica Basal (TMB)**: Soporte para múltiples fórmulas predictivas adaptadas a diferentes poblaciones:
   - **Mifflin-St Jeor** (Estándar de oro actual)
   - **Harris-Benedict (Revisada)**
@@ -17,16 +19,19 @@ Una aplicación web diseñada para calcular requerimientos nutricionales, gasto 
 - **Gasto Energético Total (GET)**: Cálculo basado en el Factor de Actividad Física (desde Sedentario hasta Muy Activo).
 
 ### 3. Definición de Objetivos Calóricos
+
 - **Ajuste Automático**: Selección rápida de objetivos predefinidos (Déficit, Mantenimiento, Superávit) con ajustes porcentuales (-20% a +20%).
 - **Ajuste Manual**: Opción para sobrescribir el cálculo automático e ingresar una meta calórica específica.
 
 ### 4. Distribución de Macronutrientes
+
 - Configuración flexible de porcentajes para Proteínas, Grasas y Carbohidratos.
 - Cálculo automático de gramos totales por macronutriente.
 - Cálculo de gramos por kilogramo de peso (g/kg), útil para nutrición deportiva.
 - Validación en tiempo real de la suma de porcentajes (debe ser 100%).
 
 ### 5. Integración y Automatización
+
 - Envío seguro de los datos calculados a un webhook de **n8n** mediante una función serverless.
 - Campo para observaciones y preferencias dietéticas (número de comidas, restricciones, etc.).
 
@@ -59,17 +64,20 @@ Una aplicación web diseñada para calcular requerimientos nutricionales, gasto 
 Este proyecto está diseñado para funcionar en entornos que soporten funciones serverless (como Vercel) y alojamiento de sitios estáticos.
 
 ### Requisitos Previos
+
 - Node.js instalado (para desarrollo local o despliegue).
 
 ### Ejecución Local
+
 Para ejecutar la aplicación localmente, necesitas servir los archivos estáticos y configurar la variable de entorno para la función serverless.
 
 1. **Clonar el repositorio**
 
 2. **Configurar Variables de Entorno**
    La función `api/enviar-n8n.js` requiere la URL del webhook de n8n.
-   
+
    Crea un archivo `.env` (o configura en tu entorno de despliegue):
+
    ```
    N8N_WEBHOOK_URL=https://tu-instancia-n8n.com/webhook/...
    ```
@@ -78,6 +86,7 @@ Para ejecutar la aplicación localmente, necesitas servir los archivos estático
    - **Vercel**: El proyecto detectará automáticamente la carpeta `api/` como funciones serverless. Asegúrate de configurar la variable de entorno `N8N_WEBHOOK_URL` en el panel de Vercel.
 
 ## Flujo de Datos
+
 1. El nutricionista ingresa los datos en la interfaz web.
 2. La aplicación calcula los requerimientos en tiempo real.
 3. Al hacer clic en "Generar Plan Nutricional", los datos se envían a `/api/enviar-n8n`.

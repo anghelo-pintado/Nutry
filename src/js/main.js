@@ -18,13 +18,37 @@ document.addEventListener("DOMContentLoaded", () => {
     input.addEventListener("input", calcularTodo);
     input.addEventListener("change", calcularTodo);
   });
+
   document.getElementById("btn-generar").addEventListener("click", enviar);
+
+  document
+    .getElementById("modo-calculo-macros")
+    .addEventListener("change", (e) => {
+      const modo = e.target.value;
+      const containerPerc = document.getElementById("container-porcentaje");
+      const containerGkg = document.getElementById("container-gkg");
+      const subTitle = document.getElementById("macro-subtitle");
+
+      if (modo === "gkg") {
+        containerPerc.classList.add("hidden");
+        containerGkg.classList.remove("hidden");
+        subTitle.textContent =
+          "Selecciona los gramos por kg. Carbohidratos serán el restante.";
+        document.getElementById("suma-macros-alert").classList.add("hidden");
+      } else {
+        containerPerc.classList.remove("hidden");
+        containerGkg.classList.add("hidden");
+        subTitle.textContent = "Ajusta los porcentajes. Deben sumar 100%.";
+      }
+      calcularTodo();
+    });
 
   calcularTodo();
 });
 
 function calcularTodo() {
-  const { base, macrosPerc, ajuste } = leerFormulario();
+  const { base, macrosConfig, ajuste } = leerFormulario();
+
   const tmb = calcularTMB(base);
   const get = calcularGET(tmb, base.actividad);
   const caloriasFinales = calcularCaloriasFinales(
@@ -32,9 +56,20 @@ function calcularTodo() {
     ajuste.porcentajeAjuste,
     ajuste.manualCals
   );
-  const macros = calcularMacros(caloriasFinales, macrosPerc, base.peso);
 
-  mostrarAlertaSumaMacros(Math.abs(macros.sumaPorcentajes - 100) <= 0.1);
+  const macros = calcularMacros(
+    caloriasFinales,
+    macrosConfig,
+    base.peso,
+    base.lbm
+  );
+
+  if (macrosConfig.modo === "porcentaje") {
+    mostrarAlertaSumaMacros(Math.abs(macros.sumaPorcentajes - 100) <= 0.1);
+  } else {
+    mostrarAlertaSumaMacros(true);
+  }
+
   actualizarResultados({ tmb, get, caloriasFinales, macros });
 }
 
@@ -48,11 +83,15 @@ async function enviar() {
 
   setLoading(true);
 
+  const modoMacros = document.getElementById("modo-calculo-macros").value;
+  const lbmValue = document.getElementById("lbm").value;
+
   const payload = {
     cliente: {
       nombre: document.getElementById("nombre").value,
       edad: document.getElementById("edad").value,
       peso: document.getElementById("peso").value,
+      masa_libre_grasa: lbmValue ? lbmValue : null,
       estatura: document.getElementById("estatura").value,
       genero: document.querySelector('input[name="genero"]:checked').value,
       actividad: document.getElementById("actividad").value,
@@ -63,9 +102,30 @@ async function enviar() {
       tmb: document.getElementById("res-tmb").textContent,
       get: document.getElementById("res-get").textContent,
       calorias_objetivo: document.getElementById("res-final-cals").textContent,
-      metodo_usado: document.getElementById("calorias-manuales").value
+      metodo_calorias: document.getElementById("calorias-manuales").value
         ? "Manual"
         : "Calculado con Ajuste",
+      metodo_macros: modoMacros === "gkg" ? "Gramos por Kg" : "Porcentajes",
+    },
+    configuracion_macros: {
+      modo: modoMacros,
+      // Enviamos los factores solo si se usó modo g/kg
+      factores_g_kg:
+        modoMacros === "gkg"
+          ? {
+              proteina: document.getElementById("factor-prot").value,
+              grasas: document.getElementById("factor-fat").value,
+            }
+          : null,
+      // Enviamos porcentajes solo si se usó modo porcentaje
+      porcentajes:
+        modoMacros === "porcentaje"
+          ? {
+              proteina: document.getElementById("perc-prot").value,
+              grasas: document.getElementById("perc-fat").value,
+              carbos: document.getElementById("perc-carb").value,
+            }
+          : null,
     },
     configuracion_dieta: {
       numero_comidas: document.getElementById("num-comidas").value,
@@ -75,6 +135,9 @@ async function enviar() {
       proteina_g: document.getElementById("g-prot").textContent,
       grasas_g: document.getElementById("g-fat").textContent,
       carbohidratos_g: document.getElementById("g-carb").textContent,
+      proteina_real_g_kg: document.getElementById("gkg-prot").textContent,
+      grasas_real_g_kg: document.getElementById("gkg-fat").textContent,
+      carbos_real_g_kg: document.getElementById("gkg-carb").textContent,
     },
     timestamp: new Date().toISOString(),
   };

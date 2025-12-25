@@ -36,7 +36,14 @@
               <label>Estatura (cm)</label>
               <input type="number" id="estatura" />
             </div>
-            <div class="input-group full-width">
+            <div class="input-group">
+              <label>Masa Libre de Grasa (kg)</label>
+              <input type="number" id="lbm" placeholder="Opcional" step="0.1" />
+              <small style="color: #666; font-size: 0.8em"
+                >Si se llena, se usará para los cálculos g/kg.</small
+              >
+            </div>
+            <div class="input-group">
               <label>Género</label>
               <div class="radio-group">
                 <label
@@ -116,10 +123,26 @@
         </div>
 
         <div class="card">
-          <h2>4. Distribución de Macros</h2>
-          <p class="subtitle">Ajusta los porcentajes. Deben sumar 100%.</p>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 15px;
+            "
+          >
+            <h2>4. Distribución de Macros</h2>
+            <select id="modo-calculo-macros" style="width: auto; padding: 5px">
+              <option value="porcentaje">Porcentajes (%)</option>
+              <option value="gkg">Gramos por Kg (g/kg)</option>
+            </select>
+          </div>
 
-          <div class="macro-grid">
+          <p class="subtitle" id="macro-subtitle">
+            Ajusta los porcentajes. Deben sumar 100%.
+          </p>
+
+          <div class="macro-grid" id="container-porcentaje">
             <div class="macro-col">
               <label>Proteína %</label>
               <input
@@ -128,10 +151,6 @@
                 id="perc-prot"
                 value="25"
               />
-              <div class="macro-result">
-                <span id="g-prot">0</span> g
-                <small id="gkg-prot">0 g/kg</small>
-              </div>
             </div>
             <div class="macro-col">
               <label>Grasas %</label>
@@ -141,10 +160,6 @@
                 id="perc-fat"
                 value="25"
               />
-              <div class="macro-result">
-                <span id="g-fat">0</span> g
-                <small id="gkg-fat">0 g/kg</small>
-              </div>
             </div>
             <div class="macro-col">
               <label>Carbos %</label>
@@ -154,12 +169,58 @@
                 id="perc-carb"
                 value="50"
               />
-              <div class="macro-result">
-                <span id="g-carb">0</span> g
-                <small id="gkg-carb">0 g/kg</small>
-              </div>
             </div>
           </div>
+
+          <div class="macro-grid hidden" id="container-gkg">
+            <div class="macro-col">
+              <label>Proteína (g/kg)</label>
+              <select id="factor-prot" class="macro-input">
+                <option value="1.2">1.2 g/kg</option>
+                <option value="1.4">1.4 g/kg</option>
+                <option value="1.6">1.6 g/kg</option>
+                <option value="1.8" selected>1.8 g/kg</option>
+                <option value="2.0">2.0 g/kg</option>
+                <option value="2.2">2.2 g/kg</option>
+              </select>
+            </div>
+            <div class="macro-col">
+              <label>Grasas (g/kg)</label>
+              <select id="factor-fat" class="macro-input">
+                <option value="0.8">0.8 g/kg</option>
+                <option value="1.0" selected>1.0 g/kg</option>
+                <option value="1.2">1.2 g/kg</option>
+              </select>
+            </div>
+            <div class="macro-col">
+              <label>Carbos</label>
+              <input
+                type="text"
+                disabled
+                value="Restante"
+                style="background: #e5e7eb; color: #666"
+              />
+            </div>
+          </div>
+
+          <div
+            class="macro-grid"
+            style="margin-top: 15px; border-top: 1px solid #eee; pt: 10px"
+          >
+            <div class="macro-result">
+              <span id="g-prot">0</span> g
+              <small id="gkg-prot">0 g/kg</small>
+            </div>
+            <div class="macro-result">
+              <span id="g-fat">0</span> g
+              <small id="gkg-fat">0 g/kg</small>
+            </div>
+            <div class="macro-result">
+              <span id="g-carb">0</span> g
+              <small id="gkg-carb">0 g/kg</small>
+            </div>
+          </div>
+
           <div id="suma-macros-alert" class="alert hidden">
             ⚠️ La suma no es 100%
           </div>

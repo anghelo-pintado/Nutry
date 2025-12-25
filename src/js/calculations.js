@@ -39,10 +39,36 @@ export function calcularCaloriasFinales(get, porcentajeAjuste, manualCals) {
   return get * (1 + (porcentajeAjuste || 0) / 100);
 }
 
-export function calcularMacros(caloriasFinales, { pProt, pFat, pCarb }, peso) {
-  const gProt = (caloriasFinales * (pProt / 100)) / 4;
-  const gFat = (caloriasFinales * (pFat / 100)) / 9;
-  const gCarb = (caloriasFinales * (pCarb / 100)) / 4;
+export function calcularMacros(
+  caloriasFinales,
+  { modo, pProt, pFat, pCarb, factorProt, factorFat },
+  peso,
+  lbm
+) {
+  let gProt, gFat, gCarb;
+  let sumaPorcentajes = 100;
+
+  const pesoReferencia = lbm && lbm > 0 ? lbm : peso;
+
+  if (modo === "gkg") {
+    // 1. Calcular gramos de Proteína y Grasa basados en el factor seleccionado
+    gProt = pesoReferencia * factorProt;
+    gFat = pesoReferencia * factorFat;
+
+    // 2. Calcular calorías consumidas por Proteína y Grasa
+    const calsProt = gProt * 4;
+    const calsFat = gFat * 9;
+
+    // 3. Asignar el RESTANTE a Carbohidratos
+    const calsRestantes = caloriasFinales - (calsProt + calsFat);
+
+    gCarb = Math.max(0, calsRestantes / 4);
+  } else {
+    gProt = (caloriasFinales * (pProt / 100)) / 4;
+    gFat = (caloriasFinales * (pFat / 100)) / 9;
+    gCarb = (caloriasFinales * (pCarb / 100)) / 4;
+    sumaPorcentajes = pProt + pFat + pCarb;
+  }
 
   return {
     gProt: Math.round(gProt),
@@ -51,6 +77,7 @@ export function calcularMacros(caloriasFinales, { pProt, pFat, pCarb }, peso) {
     gKgProt: peso > 0 ? (gProt / peso).toFixed(2) : "0",
     gKgFat: peso > 0 ? (gFat / peso).toFixed(2) : "0",
     gKgCarb: peso > 0 ? (gCarb / peso).toFixed(2) : "0",
-    sumaPorcentajes: pProt + pFat + pCarb,
+    sumaPorcentajes: sumaPorcentajes,
+    modoUsado: modo,
   };
 }
